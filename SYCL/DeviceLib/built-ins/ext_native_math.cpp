@@ -1,11 +1,11 @@
-// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple %s -o %t.out
+// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple -fsycl-device-code-split=per_kernel %s -o %t.out
 // RUN: %HOST_RUN_PLACEHOLDER %t.out
 // RUN: %CPU_RUN_PLACEHOLDER %t.out
 // RUN: %GPU_RUN_PLACEHOLDER %t.out
 // RUN: %ACC_RUN_PLACEHOLDER %t.out
 
-// OpenCL CPU driver does not support cl_khr_fp16 extension
-// UNSUPPORTED: cpu && opencl
+// OpenCL CPU driver does not support cl_khr_fp16 extension for this reason this
+// test is compiled with the -fsycl-device-code-split flag
 
 #include <CL/sycl.hpp>
 #include <cassert>
@@ -25,14 +25,13 @@ void assert_out_of_bound<sycl::half>(sycl::half val, sycl::half lower,
   assert(lower < val && val < upper);
 }
 
-template <typename T> void native_tanh_tester() {
+template <typename T> void native_tanh_tester(sycl::queue q) {
   T r{0};
 
 #ifdef SYCL_EXT_ONEAPI_NATIVE_MATH
   {
     sycl::buffer<T, 1> BufR(&r, sycl::range<1>(1));
-    sycl::queue myQueue;
-    myQueue.submit([&](sycl::handler &cgh) {
+    q.submit([&](sycl::handler &cgh) {
       auto AccR = BufR.template get_access<sycl::access::mode::write>(cgh);
       cgh.single_task([=]() {
         AccR[0] = sycl::ext::oneapi::experimental::native::tanh(T(1.0f));
@@ -44,14 +43,13 @@ template <typename T> void native_tanh_tester() {
 #endif
 }
 
-template <typename T> void native_exp2_tester() {
+template <typename T> void native_exp2_tester(sycl::queue q) {
   T r{0};
 
 #ifdef SYCL_EXT_ONEAPI_NATIVE_MATH
   {
     sycl::buffer<T, 1> BufR(&r, sycl::range<1>(1));
-    sycl::queue myQueue;
-    myQueue.submit([&](sycl::handler &cgh) {
+    q.submit([&](sycl::handler &cgh) {
       auto AccR = BufR.template get_access<sycl::access::mode::write>(cgh);
       cgh.single_task([=]() {
         AccR[0] = sycl::ext::oneapi::experimental::native::exp2(T(0.5f));
@@ -65,26 +63,30 @@ template <typename T> void native_exp2_tester() {
 
 int main() {
 
-  native_tanh_tester<float>();
-  native_tanh_tester<sycl::float2>();
-  native_tanh_tester<sycl::float3>();
-  native_tanh_tester<sycl::float4>();
-  native_tanh_tester<sycl::float8>();
-  native_tanh_tester<sycl::float16>();
+  sycl::queue q;
 
-  native_tanh_tester<sycl::half>();
-  native_tanh_tester<sycl::half2>();
-  native_tanh_tester<sycl::half3>();
-  native_tanh_tester<sycl::half4>();
-  native_tanh_tester<sycl::half8>();
-  native_tanh_tester<sycl::half16>();
+  native_tanh_tester<float>(q);
+  native_tanh_tester<sycl::float2>(q);
+  native_tanh_tester<sycl::float3>(q);
+  native_tanh_tester<sycl::float4>(q);
+  native_tanh_tester<sycl::float8>(q);
+  native_tanh_tester<sycl::float16>(q);
 
-  native_exp2_tester<sycl::half>();
-  native_exp2_tester<sycl::half2>();
-  native_exp2_tester<sycl::half3>();
-  native_exp2_tester<sycl::half4>();
-  native_exp2_tester<sycl::half8>();
-  native_exp2_tester<sycl::half16>();
+  if (q.get_device().has(sycl::aspect::fp16)) {
+    native_tanh_tester<sycl::half>(q);
+    native_tanh_tester<sycl::half2>(q);
+    native_tanh_tester<sycl::half3>(q);
+    native_tanh_tester<sycl::half4>(q);
+    native_tanh_tester<sycl::half8>(q);
+    native_tanh_tester<sycl::half16>(q);
+
+    native_exp2_tester<sycl::half>(q);
+    native_exp2_tester<sycl::half2>(q);
+    native_exp2_tester<sycl::half3>(q);
+    native_exp2_tester<sycl::half4>(q);
+    native_exp2_tester<sycl::half8>(q);
+    native_exp2_tester<sycl::half16>(q);
+  }
 
   return 0;
 }
