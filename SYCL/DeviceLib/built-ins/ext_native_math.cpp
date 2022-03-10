@@ -40,6 +40,8 @@ template <typename T> void native_tanh_tester(sycl::queue q) {
   }
 
   assert_out_of_bound(r, T(0.75f), T(0.77f)); // 0.76159415595576488812
+#else
+  assert(!"SYCL_EXT_ONEAPI_NATIVE_MATH not supported");
 #endif
 }
 
@@ -58,6 +60,8 @@ template <typename T> void native_exp2_tester(sycl::queue q) {
   }
 
   assert_out_of_bound(r, T(1.30f), T(1.50f)); // 1.4142135623730950488
+#else
+  assert(!"SYCL_EXT_ONEAPI_NATIVE_MATH not supported");
 #endif
 }
 
