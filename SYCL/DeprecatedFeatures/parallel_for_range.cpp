@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 int main() {
   auto AsyncHandler = [](exception_list ES) {
@@ -322,7 +322,7 @@ int main() {
 
       kernel K = P.get_kernel<class OpenCL2XNegativeA>();
       size_t MaxKernelWGSize =
-          K.get_work_group_info<info::kernel_work_group::work_group_size>(
+          K.get_info<info::kernel_device_specific::work_group_size>(
               Q.get_device());
       try {
         Q.submit([&](handler &CGH) {

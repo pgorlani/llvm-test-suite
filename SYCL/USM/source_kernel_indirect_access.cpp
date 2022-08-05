@@ -5,6 +5,7 @@
 // REQUIRES: opencl,opencl_icd
 
 #include <CL/cl.h>
+#include <iostream>
 #include <sycl/backend/opencl.hpp>
 #include <sycl/sycl.hpp>
 
@@ -44,7 +45,7 @@ int main() {
   Q.submit([&](handler &CGH) {
      CGH.set_arg(0, POuter);
      CGH.set_arg(1, QOuter);
-     CGH.parallel_for(cl::sycl::range<1>(1), SyclKernel);
+     CGH.parallel_for(sycl::range<1>(1), SyclKernel);
    }).wait();
 
   assert(*PInner == 4 && "Read value is corrupted");

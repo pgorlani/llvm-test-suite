@@ -10,11 +10,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <iostream>
 #include <sycl/sycl.hpp>
 
 #include "../../helpers.hpp"
-
-using namespace cl;
 
 template <typename SrcAccType, typename DstAccType>
 void copyAndAdd(SrcAccType SrcAcc, DstAccType DstAcc, int Var) {

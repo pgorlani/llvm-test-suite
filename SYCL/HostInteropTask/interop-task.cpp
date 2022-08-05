@@ -9,12 +9,13 @@
 // UNSUPPORTED: level_zero, cuda
 // REQUIRES: opencl, opencl_icd
 
+#include <iostream>
 #include <sycl/backend/opencl.hpp>
 #include <sycl/detail/cl.h>
 #include <sycl/sycl.hpp>
 
-using namespace cl::sycl;
-using namespace cl::sycl::access;
+using namespace sycl;
+using namespace sycl::access;
 
 static constexpr size_t BUFFER_SIZE = 1024;
 

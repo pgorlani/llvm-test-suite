@@ -16,9 +16,8 @@
 
 #include "../../helpers.hpp"
 #include <chrono>
+#include <iostream>
 #include <thread>
-
-using namespace cl;
 
 int main() {
   constexpr size_t BufSize = 4;

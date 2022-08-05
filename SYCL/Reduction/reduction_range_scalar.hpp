@@ -3,8 +3,9 @@
 // accessing a scalar holding the reduction result.
 
 #include "reduction_utils.hpp"
+#include <iostream>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 template <typename T, bool B> class KName;
 template <typename T, typename> class TName;

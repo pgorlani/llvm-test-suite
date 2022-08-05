@@ -6,9 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <iostream>
 #include <sycl/sycl.hpp>
-
-using namespace cl;
 
 template <class VecT, int EndIdx = VecT::get_count(), int StartIdx = 0>
 class VecPrinter {

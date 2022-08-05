@@ -4,11 +4,12 @@
 // RUN: %GPU_RUN_PLACEHOLDER %t.out
 // RUN: %ACC_RUN_PLACEHOLDER %t.out
 
+#include <iostream>
 #include <numeric>
 #include <sycl/sycl.hpp>
 #include <vector>
-using namespace cl::sycl;
-using namespace cl::sycl::ext::oneapi;
+using namespace sycl;
+using namespace sycl::ext::oneapi;
 
 class back_to_back;
 

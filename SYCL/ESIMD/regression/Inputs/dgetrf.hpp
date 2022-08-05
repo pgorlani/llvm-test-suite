@@ -10,6 +10,7 @@
 // decomposition without pivoting. The program contains multiple branches
 // corresponding to LU input sizes; all internal functions are inlined.
 //
+#include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +43,7 @@
         (fail_cond) ? "FAILED" : "PASSED");                                    \
   } while (0)
 
-using namespace cl::sycl;
+using namespace sycl;
 using namespace std;
 using namespace sycl::ext::intel::esimd;
 

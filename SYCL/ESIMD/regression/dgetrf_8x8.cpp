@@ -12,6 +12,7 @@
 //
 // Reduced version of dgetrf.cpp - M = 8, N = 8, single batch.
 //
+#include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +45,7 @@
         (fail_cond) ? "FAILED" : "PASSED");                                    \
   } while (0)
 
-using namespace cl::sycl;
+using namespace sycl;
 using namespace std;
 using namespace sycl::ext::intel::esimd;
 

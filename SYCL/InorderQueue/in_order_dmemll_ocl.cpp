@@ -13,10 +13,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <iostream>
 #include <sycl/backend/opencl.hpp>
 #include <sycl/sycl.hpp>
 
-using namespace cl::sycl;
+using namespace sycl;
 
 constexpr int numNodes = 4;
 
