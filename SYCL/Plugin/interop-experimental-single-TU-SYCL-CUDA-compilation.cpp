@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
       sycl::host_accessor c2{b_c2, sycl::read_only};
       for (size_t i = 0; i < n0; i++) {
         // __host__ func_0 = -1 * __device__ func_0
-        assert(c1[i] + c2[i] < 1e10 - 5 && "Results mismatch!");
+        assert((c1[i] + c2[i] < 1e-5) && "Results mismatch!");
       }
     }
   }
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 
     sycl::host_accessor h_idx{b_idx, sycl::read_only};
     for (size_t i = 0; i < n1; i++)
-      assert(i == h_idx[i] && "CUDA index mismatch!");
+      assert((i == h_idx[i]) && "CUDA index mismatch!");
   }
 
   // CUDA
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
              cudaMemcpyDeviceToHost);
 
   for (size_t i = 0; i < n; i++)
-    assert(0 == result[i] && "Kernel execution fail!");
+    assert((0 == result[i]) && "Kernel execution fail!");
 
   cudaFree(cuda_kern_result);
 
