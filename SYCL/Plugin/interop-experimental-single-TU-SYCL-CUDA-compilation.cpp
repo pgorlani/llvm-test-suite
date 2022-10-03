@@ -30,6 +30,17 @@ __device__ __host__ inline float test_cuda_function_4(float a, float b) {
   return (a - b) + (b - a);
 }
 
+__host__ inline float test_cuda_function_5(float a, float b) { return 1.0f; }
+__device__ inline float test_cuda_function_5(float a, float b) {
+  return -a + cos(b);
+}
+
+__host__ float test_cuda_function_6(float a, float b) { return -1.0f; }
+__device__ float test_cuda_function_6(float a, float b) {
+  return a - cos(b);
+}
+
+
 __global__ void test_cuda_kernel(int *out) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   out[i] = i - test_cuda_function_1();
@@ -55,7 +66,9 @@ int main(int argc, char **argv) {
         b[i] = cos(i) * cos(i);
         c[i] = test_cuda_function_0(a[i], b[i]) + //<-- __host__
                test_cuda_function_3(a[i], b[i]) + //<-- __host__
-               test_cuda_function_4(a[i], b[i]);  //<-- __host__ __device__
+               test_cuda_function_4(a[i], b[i]) + //<-- __host__ __device__
+               (test_cuda_function_5(a[i], b[i]) + //<-- __host__
+               test_cuda_function_6(a[i], b[i]));  //<-- __host__
       }
     }
 
@@ -68,8 +81,10 @@ int main(int argc, char **argv) {
         c[i] = test_cuda_function_0(a[i], b[i]) +   //<-- __device__
                (test_cuda_function_2(a[i], b[i]) +  //<-- __device__
                 test_cuda_function_3(a[i], b[i])) + //<-- __device__
-               test_cuda_function_4(a[i], b[i]);    //<-- __host__ __device__
-      });
+               test_cuda_function_4(a[i], b[i]) +  //<-- __host__ __device__
+               (test_cuda_function_5(a[i], b[i]) + //<-- __device__
+               test_cuda_function_6(a[i], b[i]));  //<-- __device__
+       });
     });
 
     {
