@@ -26,6 +26,8 @@ __device__ inline float test_cuda_function_3(float a, float b) {
 }
 __host__ inline float test_cuda_function_3(float a, float b) { return 0; }
 
+
+
 __device__ __host__ inline float test_cuda_function_4(float a, float b) {
   return (a - b) + (b - a);
 }
@@ -45,6 +47,28 @@ __global__ void test_cuda_kernel(int *out) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   out[i] = i - test_cuda_function_1();
 }
+
+
+
+__host__ float test_cuda_function_7() { return -1; }
+__device__ float test_cuda_function_7() { return 1; }
+
+__host__ float test_cuda_function_8() { return 3; }
+
+__device__ float test_cuda_function_9() { return 9; }
+
+int test_regular_function_0() {
+  return test_cuda_function_7();
+}
+
+int test_regular_function_1() {
+  return test_cuda_function_8();
+}
+
+int test_regular_function_2() {
+  return test_cuda_function_9();
+}
+
 
 int main(int argc, char **argv) {
 
@@ -96,6 +120,43 @@ int main(int argc, char **argv) {
       }
     }
   }
+
+  {
+    // regular func must returning the __host__ one (so, 1.0f)
+    assert((test_regular_function_0() == -1) && "Mismatch regular func to __host__");
+    assert((test_regular_function_1() == 3) && "Mismatch regular func to __host__");
+
+    std::cerr<<test_regular_function_2()<<std::endl;
+
+    const int n0 = 1;
+    const sycl::range<1> r0{n0};
+
+    sycl::buffer<int, 1> b_a{n0};
+    sycl::buffer<int, 1> b_b{n0};
+    sycl::buffer<int, 1> b_c{n0};
+
+    q.submit([&](sycl::handler &h) {
+      sycl::accessor a{b_a, h, sycl::write_only};
+      sycl::accessor b{b_b, h, sycl::write_only};
+      sycl::accessor c{b_c, h, sycl::write_only};
+
+      h.parallel_for(r0, [=](sycl::id<1> i) {
+        a[0] = test_regular_function_1(); //<-- points to __host__
+        b[0] = test_regular_function_2(); //<-- points to __device__
+        c[0] = test_regular_function_0(); //<-- points to __device__
+       });
+    });
+
+    sycl::host_accessor a{b_a, sycl::read_only};
+    sycl::host_accessor b{b_b, sycl::read_only};
+    sycl::host_accessor c{b_c, sycl::read_only};
+    assert((a[0] == 3) && "Mismatch regular func to __host__");
+    assert((b[0] == 9) && "Mismatch regular func to __device__");
+    assert((c[0] == 1) && "Mismatch regular func to __device__");
+
+  }
+
+
 
   {
     const size_t n1 = 2048;
