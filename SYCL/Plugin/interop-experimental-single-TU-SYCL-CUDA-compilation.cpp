@@ -1,4 +1,4 @@
-// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple %cuda_options -x cuda %s -lcudart -lcuda -o %t.out
+// RUN: %clangxx -fsycl -fsycl-targets=%sycl_triple %cuda_options -lcudart -lcuda -x cuda %s -o %t.out
 // RUN: %GPU_RUN_PLACEHOLDER %t.out
 // REQUIRES: cuda && cuda_dev_kit
 
@@ -160,16 +160,16 @@ void test_regular_functions(sycl::queue &q) {
     sycl::accessor r{b_r, h, sycl::write_only};
 
     h.single_task([=]() {
-      r[0] = test_regular_function_1(); //<-- points to __host__
-      r[1] = test_regular_function_2(); //<-- points to __device__
-      r[2] = test_regular_function_0(); //<-- points to __device__
+      r[0] = test_regular_function_0(); //<-- points to __device__
+      r[1] = test_regular_function_1(); //<-- points to __host__
+      r[2] = test_regular_function_2(); //<-- points to __device__
     });
   });
 
   sycl::host_accessor r{b_r, sycl::read_only};
-  assert((r[0] == 3) && "Mismatch regular func to __host__");
-  assert((r[1] == 9) && "Mismatch regular func to __device__");
-  assert((r[2] == 1) && "Mismatch regular func to __device__");
+  assert((r[0] == 1) && "Mismatch regular func to __device__");
+  assert((r[1] == 3) && "Mismatch regular func to __host__");
+  assert((r[2] == 9) && "Mismatch regular func to __device__");
 }
 
 // ------------------------------------------------------------------------- //
