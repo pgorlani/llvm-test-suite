@@ -31,8 +31,8 @@ __device__ __host__ inline float test_cuda_function_4(float a, float b) {
   return (a - b) + (b - a);
 }
 
-// device-sum: test_cuda_function_5 + test_cuda_function_6 = X
-// host-sum: test_cuda_function_5 + test_cuda_function_6 = -X
+// device-sum: test_cuda_function_5 + test_cuda_function_6 = 0
+// host-sum: test_cuda_function_5 + test_cuda_function_6 = 0
 __host__ inline float test_cuda_function_5(float a, float b) { return 1.0f; }
 __device__ inline float test_cuda_function_5(float a, float b) {
   return -a + cos(b);
